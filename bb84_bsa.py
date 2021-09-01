@@ -4,11 +4,12 @@ Eveの盗聴はBSAを想定
 """
 import numpy as np
 import matplotlib.pyplot as plt
-distance_start = 5
-distance_end = 15
+distance_start = 0
+distance_end = 200
 mesure_rate = 0.2 #測定率
 Bob_filter = 0.5 #測定フィルタ正解率
 Eve_filter = 0.5
+photon_rate = 0.1
 
 distance = distance_start
 distance_list = []
@@ -19,12 +20,12 @@ while distance < distance_end:
     ##### Alice,Bobの関係 #####
     #Alice,Bob同時確率
     P_AB = np.zeros((2,3))
-    P_AB[0,0] = 0.5 * loss * Bob_filter * mesure_rate
+    P_AB[0,0] = 0.5 * loss * Bob_filter * mesure_rate * photon_rate
     P_AB[0,1] = 0
-    P_AB[0,2] = 0.5 - 0.5 * loss * Bob_filter * mesure_rate
+    P_AB[0,2] = 0.5 - 0.5 * loss * Bob_filter * mesure_rate * photon_rate
     P_AB[1,0] = 0
-    P_AB[1,1] = 0.5 * loss * Bob_filter * mesure_rate
-    P_AB[1,2] = 0.5 - 0.5 * loss * Bob_filter * mesure_rate
+    P_AB[1,1] = 0.5 * loss * Bob_filter * mesure_rate * photon_rate
+    P_AB[1,2] = 0.5 - 0.5 * loss * Bob_filter * mesure_rate * photon_rate
     y=P_AB.reshape((1,-1))
     #Bob同時確率
     P_B = np.zeros((3))
@@ -47,12 +48,12 @@ while distance < distance_end:
     ##### Bob,Eveの関係 #####
     #Bob,Eve同時確率
     P_BE = np.zeros((3,3))
-    P_BE[0,0] = P_B[0] * (1-loss) * Eve_filter
+    P_BE[0,0] = P_B[0] * photon_rate*(1-loss) * Eve_filter
     P_BE[0,1] = 0
-    P_BE[0,2] = P_B[0] - P_B[0] * (1-loss) * Eve_filter
+    P_BE[0,2] = P_B[0] - P_B[0] * photon_rate*(1-loss) * Eve_filter
     P_BE[1,0] = 0
-    P_BE[1,1] = P_B[1] * (1-loss) * Eve_filter
-    P_BE[1,2] = P_B[1] - P_B[1] * (1-loss) * Eve_filter
+    P_BE[1,1] = P_B[1] * photon_rate*(1-loss) * Eve_filter
+    P_BE[1,2] = P_B[1] - P_B[1] * photon_rate*(1-loss) * Eve_filter
     P_BE[2,0] = 0
     P_BE[2,1] = 0
     P_BE[2,2] = P_B[2]
@@ -76,7 +77,7 @@ while distance < distance_end:
     
     distance_list.append(distance)
     R_list.append(I_AB - I_BE)
-    distance += 0.1
+    distance += 5
     
 # グラフを書く
 plt.plot(distance_list, R_list, marker="x")
